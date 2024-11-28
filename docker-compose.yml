@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  microservicio4:
+    image: microservicio4:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8098:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    depends_on:
+      - mysql4
+
+  mysql3:
+    image: mysql:8.0
+    ports:
+      - "3313:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: P4ssword!
+      MYSQL_DATABASE: my-app
