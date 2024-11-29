@@ -13,10 +13,10 @@ services:
     depends_on:
       - mysql4
 
-  mysql3:
+  mysql4:
     image: mysql:8.0
     ports:
-      - "3313:3306"
+      - "3314:3306"
     environment:
       MYSQL_ROOT_PASSWORD: P4ssword!
       MYSQL_DATABASE: my-app
