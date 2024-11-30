@@ -1,5 +1,6 @@
 package org.example.microservicio4;
 
+import io.micrometer.core.instrument.MeterRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -29,6 +30,13 @@ public class FlujoMaestro {
 
     @Autowired
     private RabbitTemplate rabbitTemplate;
+
+    @Autowired
+    public FlujoMaestro(MeterRegistry meterRegistry) {
+        meterRegistry.gauge("residuos.ruta1.size", residuosRuta1, List::size);
+        meterRegistry.gauge("residuos.ruta2.size", residuosRuta2, List::size);
+        meterRegistry.gauge("residuos.ruta3.size", residuosRuta3, List::size);
+    }
 
     public void iniciarFlujo() {
         Flux.interval(Duration.ofSeconds(4))

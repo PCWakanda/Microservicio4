@@ -1,5 +1,6 @@
 package org.example.microservicio4;
 
+import io.micrometer.core.instrument.MeterRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -18,8 +19,12 @@ public class FlujoVertedero {
     private final List<Residuo> residuos = new ArrayList<>();
     private final AtomicInteger tickCounter = new AtomicInteger(0);
 
+    public FlujoVertedero(MeterRegistry meterRegistry) {
+        meterRegistry.gauge("residuos.vertedero.size", residuos, List::size);
+    }
+
     public void iniciarFlujo() {
-        Flux.interval(Duration.ofSeconds(4))
+        Flux.interval(Duration.ofSeconds(2))
             .doOnNext(tick -> {
                 logger.info("Tick Vertedero: {}", tick);
                 logger.info("Residuos en el vertedero: {}, Total: {}", residuos, residuos.size());
