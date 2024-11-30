@@ -21,8 +21,8 @@ public class FlujoVertedero {
     public void iniciarFlujo() {
         Flux.interval(Duration.ofSeconds(4))
             .doOnNext(tick -> {
-                logger.info("Tick: {}", tick);
-                logger.info("Residuos en el vertedero: {}", residuos);
+                logger.info("Tick Vertedero: {}", tick);
+                logger.info("Residuos en el vertedero: {}, Total: {}", residuos, residuos.size());
                 if (tickCounter.incrementAndGet() >= 10) {
                     vaciarResiduos();
                     tickCounter.set(0);

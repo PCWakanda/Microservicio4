@@ -33,7 +33,7 @@ public class FlujoMaestro {
     public void iniciarFlujo() {
         Flux.interval(Duration.ofSeconds(4))
             .doOnNext(tick -> {
-                logger.info("Tick: {}", tick);
+                logger.info("Tick Maestro: {}", tick);
                 rutaDeBasura1();
                 rutaDeBasura2();
                 rutaDeBasura3();
