@@ -1,12 +1,19 @@
 package org.example.microservicio4.flujos;
 
 import io.micrometer.core.instrument.MeterRegistry;
+import org.example.microservicio4.residuos.RutaBasura1;
+import org.example.microservicio4.residuos.RutaBasura2;
+import org.example.microservicio4.residuos.RutaBasura3;
 import org.example.microservicio4.residuos.Residuo;
+import org.example.microservicio4.repository.RutaBasura1Repository;
+import org.example.microservicio4.repository.RutaBasura2Repository;
+import org.example.microservicio4.repository.RutaBasura3Repository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Flux;
 import reactor.core.scheduler.Schedulers;
 
@@ -15,6 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 @Service
@@ -31,6 +39,15 @@ public class FlujoMaestro {
 
     @Autowired
     private RabbitTemplate rabbitTemplate;
+
+    @Autowired
+    private RutaBasura1Repository rutaBasura1Repository;
+
+    @Autowired
+    private RutaBasura2Repository rutaBasura2Repository;
+
+    @Autowired
+    private RutaBasura3Repository rutaBasura3Repository;
 
     @Autowired
     public FlujoMaestro(MeterRegistry meterRegistry) {
@@ -51,9 +68,12 @@ public class FlujoMaestro {
             .subscribe();
     }
 
-    private void rutaDeBasura1() {
+    @Transactional
+    protected void rutaDeBasura1() {
         int numeroResiduos = random.nextInt(5) + 1;
-        generarResiduos(numeroResiduos, contadorRuta1, residuosRuta1);
+        List<RutaBasura1> nuevosResiduos = generarResiduosRuta1(numeroResiduos, contadorRuta1);
+        rutaBasura1Repository.saveAll(nuevosResiduos);
+        residuosRuta1.addAll(nuevosResiduos);
         int sumaTotal = contadorRuta1.get();
         logger.info("Ruta de Basura 1 - Residuos: {}, Suma Total: {}", residuosRuta1, sumaTotal);
         if (sumaTotal >= 30) {
@@ -61,9 +81,12 @@ public class FlujoMaestro {
         }
     }
 
-    private void rutaDeBasura2() {
+    @Transactional
+    protected void rutaDeBasura2() {
         int numeroResiduos = random.nextInt(5) + 1;
-        generarResiduos(numeroResiduos, contadorRuta2, residuosRuta2);
+        List<RutaBasura2> nuevosResiduos = generarResiduosRuta2(numeroResiduos, contadorRuta2);
+        rutaBasura2Repository.saveAll(nuevosResiduos);
+        residuosRuta2.addAll(nuevosResiduos);
         int sumaTotal = contadorRuta2.get();
         logger.info("Ruta de Basura 2 - Residuos: {}, Suma Total: {}", residuosRuta2, sumaTotal);
         if (sumaTotal >= 30) {
@@ -71,9 +94,12 @@ public class FlujoMaestro {
         }
     }
 
-    private void rutaDeBasura3() {
+    @Transactional
+    protected void rutaDeBasura3() {
         int numeroResiduos = random.nextInt(5) + 1;
-        generarResiduos(numeroResiduos, contadorRuta3, residuosRuta3);
+        List<RutaBasura3> nuevosResiduos = generarResiduosRuta3(numeroResiduos, contadorRuta3);
+        rutaBasura3Repository.saveAll(nuevosResiduos);
+        residuosRuta3.addAll(nuevosResiduos);
         int sumaTotal = contadorRuta3.get();
         logger.info("Ruta de Basura 3 - Residuos: {}, Suma Total: {}", residuosRuta3, sumaTotal);
         if (sumaTotal >= 30) {
@@ -81,10 +107,40 @@ public class FlujoMaestro {
         }
     }
 
-    private void generarResiduos(int numeroResiduos, AtomicInteger contador, List<Residuo> residuos) {
-        IntStream.range(0, numeroResiduos)
-                .mapToObj(i -> new Residuo("residuo" + contador.getAndIncrement()))
-                .forEach(residuos::add);
+    @Transactional
+    public void clearResiduosRuta1() {
+        residuosRuta1.clear();
+        rutaBasura1Repository.deleteAll();
+    }
+
+    @Transactional
+    public void clearResiduosRuta2() {
+        residuosRuta2.clear();
+        rutaBasura2Repository.deleteAll();
+    }
+
+    @Transactional
+    public void clearResiduosRuta3() {
+        residuosRuta3.clear();
+        rutaBasura3Repository.deleteAll();
+    }
+
+    private List<RutaBasura1> generarResiduosRuta1(int numeroResiduos, AtomicInteger contador) {
+        return IntStream.range(0, numeroResiduos)
+                .mapToObj(i -> new RutaBasura1("residuo" + contador.getAndIncrement()))
+                .collect(Collectors.toList());
+    }
+
+    private List<RutaBasura2> generarResiduosRuta2(int numeroResiduos, AtomicInteger contador) {
+        return IntStream.range(0, numeroResiduos)
+                .mapToObj(i -> new RutaBasura2("residuo" + contador.getAndIncrement()))
+                .collect(Collectors.toList());
+    }
+
+    private List<RutaBasura3> generarResiduosRuta3(int numeroResiduos, AtomicInteger contador) {
+        return IntStream.range(0, numeroResiduos)
+                .mapToObj(i -> new RutaBasura3("residuo" + contador.getAndIncrement()))
+                .collect(Collectors.toList());
     }
 
     public List<Residuo> getResiduosRuta1() {
@@ -109,17 +165,5 @@ public class FlujoMaestro {
 
     public AtomicInteger getContadorRuta3() {
         return contadorRuta3;
-    }
-
-    public void clearResiduosRuta1() {
-        residuosRuta1.clear();
-    }
-
-    public void clearResiduosRuta2() {
-        residuosRuta2.clear();
-    }
-
-    public void clearResiduosRuta3() {
-        residuosRuta3.clear();
     }
 }
