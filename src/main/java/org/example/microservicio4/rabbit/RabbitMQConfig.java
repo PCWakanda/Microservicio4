@@ -1,4 +1,4 @@
-package org.example.microservicio4;
+package org.example.microservicio4.rabbit;
 
 import org.springframework.amqp.core.Queue;
 import org.springframework.context.annotation.Bean;

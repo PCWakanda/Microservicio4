@@ -1,4 +1,4 @@
-package org.example.microservicio4;
+package org.example.microservicio4.residuos;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

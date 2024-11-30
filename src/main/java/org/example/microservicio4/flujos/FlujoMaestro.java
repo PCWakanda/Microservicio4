@@ -1,6 +1,7 @@
-package org.example.microservicio4;
+package org.example.microservicio4.flujos;
 
 import io.micrometer.core.instrument.MeterRegistry;
+import org.example.microservicio4.residuos.Residuo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
