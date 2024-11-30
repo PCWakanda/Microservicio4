@@ -13,6 +13,9 @@ public class Microservicio4Application {
     @Autowired
     private FlujoMaestro flujoMaestro;
 
+    @Autowired
+    private FlujoVertedero flujoVertedero;
+
     public static void main(String[] args) {
         SpringApplication.run(Microservicio4Application.class, args);
     }
@@ -20,5 +23,6 @@ public class Microservicio4Application {
     @PostConstruct
     public void init() {
         flujoMaestro.iniciarFlujo();
+        flujoVertedero.iniciarFlujo();
     }
 }
